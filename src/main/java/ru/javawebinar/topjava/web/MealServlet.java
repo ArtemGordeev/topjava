@@ -23,25 +23,31 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class MealServlet extends HttpServlet {
     private static final Logger log = getLogger(MealServlet.class);
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    MealDao dao = new MealDaoMemoryImpl();
+    private MealDao dao;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        dao = new MealDaoMemoryImpl();
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String forward;
         String action = request.getParameter("action");
-        List<MealTo> mealsTo = MealsUtil.filteredByStreams(dao.getAllMeals(), LocalTime.MIN, LocalTime.MAX, 2000);
+        List<MealTo> mealsTo = MealsUtil.filteredByStreams(dao.getAll(), LocalTime.MIN, LocalTime.MAX, 2000);
         if (action != null) {
             switch (action) {
                 case "delete": {
                     int mealId = Integer.parseInt(request.getParameter("mealId"));
-                    dao.deleteMeal(mealId);
+                    dao.delete(mealId);
                     response.sendRedirect("meals");
                     return;
                 }
                 case "edit": {
                     forward = "/meal.jsp";
                     int mealId = Integer.parseInt(request.getParameter("mealId"));
-                    Meal meal = dao.getMealById(mealId);
+                    Meal meal = dao.getById(mealId);
                     request.setAttribute("meal", meal);
                     break;
                 }
@@ -70,10 +76,10 @@ public class MealServlet extends HttpServlet {
         meal.setDateTime(dateTime);
         String mealId = request.getParameter("id");
         if (mealId == null || mealId.isEmpty()) {
-            dao.addMeal(meal);
+            dao.add(meal);
         } else {
             meal.setId(Integer.parseInt(mealId));
-            dao.updateMeal(meal);
+            dao.update(meal);
         }
         response.sendRedirect("meals");
     }
