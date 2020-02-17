@@ -51,6 +51,10 @@ public class MealRestController {
     }
 
     public List<MealTo> filteredByTime(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
+//        LocalDate startDate = sD != null && !sD.isEmpty() ? LocalDate.parse(sD, DateTimeFormatter.ofPattern("yyyy-MM-dd")) : null;
+//        LocalDate endDate = eD != null && !eD.isEmpty() ? LocalDate.parse(eD, DateTimeFormatter.ofPattern("yyyy-MM-dd")) : null;
+//        LocalTime startTime = sT != null && !sT.isEmpty() ? LocalTime.parse(sT, DateTimeFormatter.ofPattern("HH:mm")) : null;
+//        LocalTime endTime = eT != null && !eT.isEmpty() ?LocalTime.parse(eT, DateTimeFormatter.ofPattern("HH:mm")) : null;
         startTime = startTime != null ? startTime : LocalTime.MIN;
         endTime = endTime != null ? endTime : LocalTime.MAX;
         startDate = startDate != null ? startDate : LocalDate.MIN;

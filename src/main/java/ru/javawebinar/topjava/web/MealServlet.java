@@ -5,9 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.repository.MealRepository;
-import ru.javawebinar.topjava.repository.inmemory.InMemoryMealRepository;
-import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletConfig;
@@ -16,7 +13,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
@@ -24,12 +23,19 @@ public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
 
     private MealRestController mealRestController;
+    private ConfigurableApplicationContext appCtx;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
+        appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
         mealRestController = appCtx.getBean(MealRestController.class);
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        appCtx.close();
     }
 
     @Override
@@ -52,10 +58,15 @@ public class MealServlet extends HttpServlet {
         response.sendRedirect("meals");
     }
 
+
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-
+        String startDate = request.getParameter("startDate") != null ? request.getParameter("startDate") : "";
+        String endDate = request.getParameter("endDate") != null ? request.getParameter("endDate") : "";
+        String startTime = request.getParameter("startTime") != null ? request.getParameter("startTime") : "";
+        String endTime = request.getParameter("endTime") != null ? request.getParameter("endTime") : "";
         switch (action == null ? "all" : action) {
             case "delete":
                 int id = getId(request);
@@ -74,7 +85,11 @@ public class MealServlet extends HttpServlet {
             case "all":
             default:
                 log.info("getAll");
-                request.setAttribute("meals", mealRestController.getAll());
+                LocalDate startLocalDate =  !startDate.isEmpty() ? LocalDate.parse(startDate) : null;
+                LocalDate endLocalDate =  !endDate.isEmpty() ? LocalDate.parse(endDate) : null;
+                LocalTime startLocalTime = !startTime.isEmpty() ? LocalTime.parse(startTime) : null;
+                LocalTime endLocalTime = !endTime.isEmpty() ? LocalTime.parse(endTime) : null;
+                request.setAttribute("meals", mealRestController.filteredByTime(startLocalDate, startLocalTime, endLocalDate, endLocalTime));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }
