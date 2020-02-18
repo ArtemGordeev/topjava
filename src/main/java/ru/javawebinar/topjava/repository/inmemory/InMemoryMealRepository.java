@@ -21,7 +21,7 @@ public class InMemoryMealRepository implements MealRepository {
     private AtomicInteger counter = new AtomicInteger(0);
 
     {
-        MealsUtil.MEALS.forEach(meal -> save(meal,1));
+        MealsUtil.MEALS.forEach(meal -> save(meal, 1));
     }
 
     @Override
@@ -33,19 +33,17 @@ public class InMemoryMealRepository implements MealRepository {
             return meal;
         }
         int mealId = meal.getId();
-        if(meal.getUserId() == userId
-                && repository.containsKey(mealId)
-                && repository.get(mealId).getUserId() == userId) {
-            return repository.computeIfPresent(mealId, (id, oldMeal) -> meal);
+        Meal result = null;
+        if (repository.get(mealId) != null && repository.get(mealId).getUserId() == userId) {
+            result = repository.computeIfPresent(mealId, (id, oldMeal) -> meal);
         }
-        return null;
+        return result;
     }
 
     @Override
     public boolean delete(int id, int userId) {
         log.info("delete {}", id);
-        Meal meal = repository.get(id);
-        if(meal != null && meal.getUserId() == userId){
+        if (get(id, userId) != null) {
             return repository.remove(id) != null;
         }
         return false;
@@ -62,15 +60,18 @@ public class InMemoryMealRepository implements MealRepository {
     public Collection<Meal> getAll(int userId) {
         log.info("getAll");
         return repository.values().stream()
-                .filter(meal -> meal.getUserId()==userId)
+                .filter(meal -> meal.getUserId() == userId)
                 .sorted((m1, m2) -> m2.getDate().compareTo(m1.getDate()))
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<Meal> filteredByDate(int userId, LocalDate startDate, LocalDate endDate) {
-        return getAll(userId).stream()
-                .filter(meal -> DateTimeUtil.isBetweenInclusive(meal.getDate(), startDate, endDate))
+        log.info("filteredByDate");
+        return repository.values().stream()
+                .filter(meal -> meal.getUserId() == userId &&
+                        DateTimeUtil.isBetweenInclusive(meal.getDate(), startDate, endDate))
+                .sorted((m1, m2) -> m2.getDate().compareTo(m1.getDate()))
                 .collect(Collectors.toList());
     }
 }

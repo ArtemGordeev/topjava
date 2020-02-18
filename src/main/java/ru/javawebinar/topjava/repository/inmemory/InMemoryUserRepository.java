@@ -23,6 +23,7 @@ public class InMemoryUserRepository implements UserRepository {
                 new User(null, "Bob", "bob@gmail.com", "0000", Role.ROLE_USER),
                 new User(null, "Ken", "ken@gmail.com", "password", Role.ROLE_USER),
                 new User(null, "Tom", "tom@gmail.com", "12345", Role.ROLE_USER),
+                new User(null, "Ken", "ken3@gmail.com", "qwerty", Role.ROLE_USER),
                 new User(null, "Ken", "ken2@gmail.com", "qwerty", Role.ROLE_USER)
         );
         users.forEach(this::save);
@@ -55,7 +56,11 @@ public class InMemoryUserRepository implements UserRepository {
     public List<User> getAll() {
         log.info("getAll");
         List<User> users = new ArrayList<>(repository.values());
-        users.sort(Comparator.comparing(User::getName));
+        users.sort((u1, u2) -> {
+            int result = u1.getName().compareTo(u2.getName());
+            if (result != 0) return result;
+            return u1.getId().compareTo(u2.getId());
+        });
         return users;
     }
 
