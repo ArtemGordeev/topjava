@@ -37,7 +37,7 @@ public class MealServiceTest {
 
     private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
 
-    public static List<String> results = new ArrayList<>();
+    private static StringBuilder results = new StringBuilder();
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
@@ -46,16 +46,15 @@ public class MealServiceTest {
     public Stopwatch stopwatch = new Stopwatch(){
         @Override
         protected void finished(long nanos, Description description) {
-            String result = String.format("Test %s finished, spent %d microseconds",
-                    description.getMethodName(), TimeUnit.NANOSECONDS.toMicros(nanos));
-            log.info(result);
-            MealServiceTest.results.add(result);
+            log.info("{} - {} ms",  description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos));
+            String result = String.format("%-24s%d ms", description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos));
+            results.append("\n").append(result);
         }
     };
 
     @AfterClass
     public static void after() {
-        results.forEach(log::info);
+        log.info((results.toString()));
     }
 
     @Autowired
