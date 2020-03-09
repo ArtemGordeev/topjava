@@ -26,4 +26,6 @@
         <appender-ref ref="file"/>
         <appender-ref ref="console"/>
     </root>
+
+    <logger name="org.springframework.orm.jpa.JpaTransactionManager" level="debug"/>
 </configuration>
