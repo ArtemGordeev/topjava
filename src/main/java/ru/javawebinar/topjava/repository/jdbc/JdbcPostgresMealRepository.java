@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,5 +23,10 @@ public class JdbcPostgresMealRepository extends JdbcMealRepository {
     @Override
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
         return getBetween(startDateTime, endDateTime, userId);
+    }
+
+    @Override
+    public LocalDateTime getDateTime(Meal meal) {
+        return meal.getDateTime();
     }
 }

@@ -12,15 +12,20 @@ import java.time.LocalDateTime;
 import java.util.List;
 @Repository
 @Profile(value = "hsqldb")
-public class JdbcHSQLDBMealRepository extends JdbcMealRepository {
+public class JdbcHsqldbMealRepository extends JdbcMealRepository {
 
     @Autowired
-    public JdbcHSQLDBMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    public JdbcHsqldbMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         super(jdbcTemplate, namedParameterJdbcTemplate);
     }
 
     @Override
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
         return getBetween(Timestamp.valueOf(startDateTime), Timestamp.valueOf(endDateTime), userId);
+    }
+
+    @Override
+    public Timestamp getDateTime(Meal meal) {
+        return Timestamp.valueOf(meal.getDateTime());
     }
 }
