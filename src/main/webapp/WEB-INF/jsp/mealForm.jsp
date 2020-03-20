@@ -8,9 +8,17 @@
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <section>
     <hr>
-    <c:set var="user" value="Sergey" />
-<%--    <h2>${param.action == 'create' ? 'Create meal' : 'Edit meal'}</h2>--%>
-    <h2><spring:message code="mealForm.createEditMeal"/></h2>
+    <c:set var="user" value="Sergey"/>
+    <h2>
+        <c:choose>
+            <c:when test="${param.action=='create'}">
+                <spring:message code="mealForm.createMeal"/>
+            </c:when>
+            <c:otherwise>
+                <spring:message code="mealForm.editMeal"/>
+            </c:otherwise>
+        </c:choose>
+    </h2>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
     <form method="post">
         <input type="hidden" name="id" value="${meal.id}">

@@ -2,12 +2,10 @@ package ru.javawebinar.topjava.repository.datajpa;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
-import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 public class DataJpaUserRepository implements UserRepository {
@@ -47,12 +45,6 @@ public class DataJpaUserRepository implements UserRepository {
     @Override
     public User getWithMeals(int id) {
         User user = crudRepository.getWithMeals(id);
-        if(user!= null) {
-            List<Meal> meals = user.getMeals();
-            List<Meal> mealsWithoutDub = meals.stream().distinct().collect(Collectors.toList());
-            user.setMeals(mealsWithoutDub);
-            return user;
-        }
-        return null;
+        return user;
     }
 }
