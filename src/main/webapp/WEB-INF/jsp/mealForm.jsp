@@ -10,14 +10,9 @@
     <hr>
     <c:set var="user" value="Sergey"/>
     <h2>
-        <c:choose>
-            <c:when test="${param.action=='create'}">
-                <spring:message code="mealForm.createMeal"/>
-            </c:when>
-            <c:otherwise>
-                <spring:message code="mealForm.editMeal"/>
-            </c:otherwise>
-        </c:choose>
+        <c:set var="createMeal"><spring:message code="mealForm.createMeal"/></c:set>
+        <c:set var="editMeal"><spring:message code="mealForm.editMeal"/></c:set>
+        ${param.action == 'create' ? createMeal : editMeal}
     </h2>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
     <form method="post">

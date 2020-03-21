@@ -18,9 +18,11 @@ import javax.validation.groups.Default;
 import java.sql.*;
 import java.util.*;
 
+import static ru.javawebinar.topjava.util.ValidationUtil.validate;
+
 @Repository
 @Transactional(readOnly = true)
-public class JdbcUserRepository extends JdbcRepository implements UserRepository {
+public class JdbcUserRepository implements UserRepository {
 
     private static final BeanPropertyRowMapper<User> ROW_MAPPER = BeanPropertyRowMapper.newInstance(User.class);
 
@@ -32,7 +34,6 @@ public class JdbcUserRepository extends JdbcRepository implements UserRepository
 
     @Autowired
     public JdbcUserRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        super();
         this.insertUser = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("users")
                 .usingGeneratedKeyColumns("id");
@@ -45,15 +46,16 @@ public class JdbcUserRepository extends JdbcRepository implements UserRepository
     private static List<User> extractData(ResultSet resultSet) throws SQLException {
         Map<Integer, User> map = new HashMap<>();
         while (resultSet.next()) {
-            Integer userId = resultSet.getInt("id");
             final User user = ROW_MAPPER.mapRow(resultSet, resultSet.getRow());
             user.setRoles(new HashSet<>());
-            map.putIfAbsent(userId, user);
-            User userFromMap = map.get(userId);
+            map.putIfAbsent(user.getId(), user);
+            User userFromMap = map.get(user.getId());
             Role role = Role.valueOf(resultSet.getString("role"));
             userFromMap.getRoles().add(role);
         }
-        return new ArrayList<User>(map.values());
+        List<User> users = new ArrayList<>(map.values());
+        users.sort(Comparator.comparing(User::getName).thenComparing(User::getEmail));
+        return users;
     }
 
     @Override

@@ -13,19 +13,19 @@
     <form method="get" action="meals">
         <input type="hidden" name="action" value="filter">
         <dl>
-            <dt>From Date:</dt>
+            <dt><spring:message code="meal.fromDate"/></dt>
             <dd><input type="date" name="startDate" value="${param.startDate}"></dd>
         </dl>
         <dl>
-            <dt>To Date:</dt>
+            <dt><spring:message code="meal.toDate"/></dt>
             <dd><input type="date" name="endDate" value="${param.endDate}"></dd>
         </dl>
         <dl>
-            <dt>From Time:</dt>
+            <dt><spring:message code="meal.fromTime"/></dt>
             <dd><input type="time" name="startTime" value="${param.startTime}"></dd>
         </dl>
         <dl>
-            <dt>To Time:</dt>
+            <dt><spring:message code="meal.toTime"/></dt>
             <dd><input type="time" name="endTime" value="${param.endTime}"></dd>
         </dl>
         <button type="submit"><spring:message code="common.select"/></button>
@@ -54,7 +54,7 @@
                 </td>
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
-                <td><a href="meals/update/${meal.id}?action=update"><spring:message code="meal.update"/></a></td>
+                <td><a href="meals/update/${meal.id}"><spring:message code="meal.update"/></a></td>
                 <td><a href="meals/delete/${meal.id}"><spring:message code="meal.delete"/></a></td>
             </tr>
         </c:forEach>
