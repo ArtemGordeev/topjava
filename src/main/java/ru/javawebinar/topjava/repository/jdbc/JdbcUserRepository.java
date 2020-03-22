@@ -44,18 +44,15 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     private static List<User> extractData(ResultSet resultSet) throws SQLException {
-        Map<Integer, User> map = new HashMap<>();
+        Map<Integer, User> map = new LinkedHashMap<>();
         while (resultSet.next()) {
             final User user = ROW_MAPPER.mapRow(resultSet, resultSet.getRow());
             user.setRoles(new HashSet<>());
-            map.putIfAbsent(user.getId(), user);
-            User userFromMap = map.get(user.getId());
+            User userFromMap = map.computeIfAbsent(user.getId(), a -> user);
             Role role = Role.valueOf(resultSet.getString("role"));
             userFromMap.getRoles().add(role);
         }
-        List<User> users = new ArrayList<>(map.values());
-        users.sort(Comparator.comparing(User::getName).thenComparing(User::getEmail));
-        return users;
+        return new ArrayList<>(map.values());
     }
 
     @Override
